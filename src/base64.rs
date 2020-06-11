@@ -38,7 +38,7 @@ pub fn encode(input: &String) -> String {
         2 => {
             result.push(DICT[(bytes[len - 2]>>2) as usize] as u8);
             result.push(DICT[(((bytes[len - 2]<<4) & MASK) | (bytes[len - 1]>>4)) as usize] as u8);
-            result.push(DICT[((bytes[len - 1]<<4) & MASK) as usize] as u8);
+            result.push(DICT[((bytes[len - 1]<<2) & MASK) as usize] as u8);
             result.push('=' as u8);
         },
         _ => {
@@ -60,6 +60,6 @@ mod tests {
     fn encode_test() {
         assert_eq!(super::encode(&"Man".to_string()), "TWFu".to_string());
         assert_eq!(super::encode(&"A".to_string()), "QQ==".to_string());
-        assert_eq!(super::encode(&"BC".to_string()), "QKM=".to_string());
+        assert_eq!(super::encode(&"BC".to_string()), "QkM=".to_string());
     }
 }
