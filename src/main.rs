@@ -1,5 +1,5 @@
 mod base64;
 
 fn main() {
-        println!("Hello, world! = {:?}", ('=' as u8 ));
+    println!("Hello, world! = {:?}", ('=' as u8));
 }

@@ -348,7 +348,11 @@ pub fn encode(input: &String) -> String {
     };
     for i in 0..(len / 3) {
         let index = i * 3;
-        result.append(&mut transform((bytes[index], bytes[index + 1], bytes[index + 2])));
+        result.append(&mut transform((
+            bytes[index],
+            bytes[index + 1],
+            bytes[index + 2],
+        )));
     }
 
     match len % 3 {
@@ -361,7 +365,8 @@ pub fn encode(input: &String) -> String {
         2 => {
             result.push(ENCODE_DICT[(bytes[len - 2] >> 2) as usize] as u8);
             result.push(
-                ENCODE_DICT[(((bytes[len - 2] << 4) & MASK) | (bytes[len - 1] >> 4)) as usize] as u8,
+                ENCODE_DICT[(((bytes[len - 2] << 4) & MASK) | (bytes[len - 1] >> 4)) as usize]
+                    as u8,
             );
             result.push(ENCODE_DICT[((bytes[len - 1] << 2) & MASK) as usize] as u8);
             result.push(EQUAL_CHAR);
@@ -383,14 +388,19 @@ pub fn decode(input: &String) -> String {
     let mut result: Vec<u8> = Vec::new();
     let transform = |bytes: (u8, u8, u8, u8)| -> Vec<u8> {
         vec![
-            (DECODE_DICT[bytes.0 as usize]<<2) | (DECODE_DICT[bytes.1 as usize]>>4),
-            (DECODE_DICT[bytes.1 as usize]<<4) | (DECODE_DICT[bytes.2 as usize]>>2),
-            (DECODE_DICT[bytes.2 as usize]<<6) | DECODE_DICT[bytes.3 as usize]
+            (DECODE_DICT[bytes.0 as usize] << 2) | (DECODE_DICT[bytes.1 as usize] >> 4),
+            (DECODE_DICT[bytes.1 as usize] << 4) | (DECODE_DICT[bytes.2 as usize] >> 2),
+            (DECODE_DICT[bytes.2 as usize] << 6) | DECODE_DICT[bytes.3 as usize],
         ]
     };
     for i in 0..((len / 4) - 1) {
         let index = i * 4;
-        result.append(&mut transform((bytes[index], bytes[index + 1], bytes[index + 2], bytes[index + 3])));
+        result.append(&mut transform((
+            bytes[index],
+            bytes[index + 1],
+            bytes[index + 2],
+            bytes[index + 3],
+        )));
     }
 
     let equal_char_count = if bytes[len - 1] == EQUAL_CHAR {
@@ -404,18 +414,31 @@ pub fn decode(input: &String) -> String {
     };
     match equal_char_count {
         0 => {
-            result.append(&mut transform((bytes[len - 4], bytes[len - 3], bytes[len - 2], bytes[len - 1])));
-        },
+            result.append(&mut transform((
+                bytes[len - 4],
+                bytes[len - 3],
+                bytes[len - 2],
+                bytes[len - 1],
+            )));
+        }
         1 => {
-            result.push((DECODE_DICT[bytes[len - 4] as usize]<<2) | (DECODE_DICT[bytes[len - 3] as usize]>>4));
-            result.push((DECODE_DICT[bytes[len - 3] as usize]<<4) | (DECODE_DICT[bytes[len - 2] as usize]>>2));
-        },
+            result.push(
+                (DECODE_DICT[bytes[len - 4] as usize] << 2)
+                    | (DECODE_DICT[bytes[len - 3] as usize] >> 4),
+            );
+            result.push(
+                (DECODE_DICT[bytes[len - 3] as usize] << 4)
+                    | (DECODE_DICT[bytes[len - 2] as usize] >> 2),
+            );
+        }
         2 => {
-            result.push((DECODE_DICT[bytes[len - 4] as usize]<<2) | (DECODE_DICT[bytes[len - 3] as usize]>>4));
-        },
+            result.push(
+                (DECODE_DICT[bytes[len - 4] as usize] << 2)
+                    | (DECODE_DICT[bytes[len - 3] as usize] >> 4),
+            );
+        }
         _ => {}
     }
-
 
     let result = match str::from_utf8(result.as_slice()) {
         Ok(v) => v,
