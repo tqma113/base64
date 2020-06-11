@@ -7,7 +7,7 @@ static DICT: [char; 64] = [
     '5', '6', '7', '8', '9', '+', '/',
 ];
 
-static MASK: u8 = (1<<6) - 1;
+static MASK: u8 = (1 << 6) - 1;
 
 pub fn encode(input: &String) -> String {
     let bytes = input.as_bytes();
@@ -16,10 +16,10 @@ pub fn encode(input: &String) -> String {
     let mut result: Vec<u8> = Vec::new();
     let transform = |bytes: Vec<u8>| -> Vec<u8> {
         vec![
-            DICT[(bytes[0]>>2) as usize] as u8,
-            DICT[(((bytes[0]<<4) & MASK) | (bytes[1]>>4)) as usize] as u8,
-            DICT[(((bytes[1]<<2) & MASK) | (bytes[2]>>6)) as usize] as u8,
-            DICT[(bytes[2] & MASK) as usize] as u8
+            DICT[(bytes[0] >> 2) as usize] as u8,
+            DICT[(((bytes[0] << 4) & MASK) | (bytes[1] >> 4)) as usize] as u8,
+            DICT[(((bytes[1] << 2) & MASK) | (bytes[2] >> 6)) as usize] as u8,
+            DICT[(bytes[2] & MASK) as usize] as u8,
         ]
     };
     for i in 0..(len / 3) {
@@ -30,20 +30,20 @@ pub fn encode(input: &String) -> String {
 
     match len % 3 {
         1 => {
-            result.push(DICT[(bytes[len - 1]>>2) as usize] as u8);
-            result.push(DICT[(bytes[len - 1]<<4 & MASK) as usize] as u8);
+            result.push(DICT[(bytes[len - 1] >> 2) as usize] as u8);
+            result.push(DICT[(bytes[len - 1] << 4 & MASK) as usize] as u8);
             result.push('=' as u8);
             result.push('=' as u8);
-        },
-        2 => {
-            result.push(DICT[(bytes[len - 2]>>2) as usize] as u8);
-            result.push(DICT[(((bytes[len - 2]<<4) & MASK) | (bytes[len - 1]>>4)) as usize] as u8);
-            result.push(DICT[((bytes[len - 1]<<2) & MASK) as usize] as u8);
-            result.push('=' as u8);
-        },
-        _ => {
-
         }
+        2 => {
+            result.push(DICT[(bytes[len - 2] >> 2) as usize] as u8);
+            result.push(
+                DICT[(((bytes[len - 2] << 4) & MASK) | (bytes[len - 1] >> 4)) as usize] as u8,
+            );
+            result.push(DICT[((bytes[len - 1] << 2) & MASK) as usize] as u8);
+            result.push('=' as u8);
+        }
+        _ => {}
     }
 
     let result = match str::from_utf8(result.as_slice()) {
@@ -52,7 +52,6 @@ pub fn encode(input: &String) -> String {
     };
     String::from(result)
 }
-
 
 #[cfg(test)]
 mod tests {
